@@ -1,12 +1,32 @@
-# 🔬 DeepScanX — Unified AI Radiology & pathology Assistant
+# 🔬 DeepScanX — Unified AI Radiology & Pathology Assistant
 
-**Empowering Healthcare with explainable Deep Learning for Early Cancer Detection**
+**Empowering Healthcare with Explainable Deep Learning for Early Cancer Detection**
 
 DeepScanX is a state-of-the-art, modular medical imaging platform that combines modern web technologies with advanced neural networks. It provides clinicians, researchers, and medical students with a unified interface for the rapid assessment of histopathology and radiology images across 13+ specialized diagnostic modules.
 
 <div align="center">
-  <img src="https://github.com/Aditya-singh-AI/DeepScanX/raw/main/assets/hero-banner.png" alt="DeepScanX Hero" width="100%" />
+  <img src="assets/screenshots/hero_header.png" alt="DeepScanX Hero" width="100%" />
 </div>
+
+---
+
+## ✨ Platform Preview
+
+Experience the future of digital pathology and radiology through our intuitive, high-performance interface.
+
+<div align="center">
+  <table width="100%">
+    <tr>
+      <td width="50%"><img src="assets/screenshots/selection_ui.png" alt="Diagnostic Selection" /></td>
+      <td width="50%"><img src="assets/screenshots/technical_features.png" alt="Technical Capabilities" /></td>
+    </tr>
+    <tr>
+      <td align="center"><b>Intuitive Diagnostic Selection</b></td>
+      <td align="center"><b>Advanced Clinical Analytics</b></td>
+    </tr>
+  </table>
+</div>
+
 
 ---
 
@@ -24,18 +44,23 @@ DeepScanX has been re-engineered for performance, security, and scalability:
 
 ## 🎯 Diagnostic Modules
 
-DeepScanX provides specialized analysis for a wide range of medical conditions:
+DeepScanX provides specialized analysis for a wide range of medical conditions, powered by high-precision neural networks.
+
+<div align="center">
+  <img src="assets/screenshots/features_grid.png" alt="DeepScanX Modules Grid" width="90%" />
+</div>
 
 | Module | Purpose | Focus |
 |:---|:---|:---|
 | **Brain Tumor** | MRI Analysis | Detection & Grading |
-| **Lung & Colon** | Histopathology | 5-Class Tissue Classification |
+| **Lung & Colon** | Histopathology | 4-Class Tissue Classification |
 | **Breast (IDC)** | Tissue Assessment | Invasive Ductal Carcinoma Detection |
 | **Skin Cancer** | Dermoscopy | Melanoma & Lesion Classification |
 | **Chest X-Ray** | Radiology | Pneumonia & TB Detection |
 | **Retinopathy** | Fundus Imaging | Diabetic Severity Grading |
 | **WSI Viewer** | Whole Slide Imaging | High-Resolution Pathology Tiling |
 | **AI Chatbot** | Clinical Support | Real-time Medical Q&A |
+
 
 ---
 
@@ -131,10 +156,17 @@ start_local.bat
 
 ## 📊 Impact & Statistics
 
-- **97%** Model Accuracy on Lung Cancer datasets.
+Addressing critical challenges in modern radiology and cancer diagnosis with data-driven precision.
+
+<div align="center">
+  <img src="assets/screenshots/impact_stats.png" alt="DeepScanX Impact" width="100%" />
+</div>
+
+- **97%** Model Accuracy on validated histopathology datasets.
 - **50%** Reduction in preliminary diagnostic time.
-- **24/7** Consistent AI-driven analysis.
-- **HIPAA-Compliant** data handling architecture.
+- **24/7** Consistent AI-driven analysis across all time zones.
+- **90%+** Survival rate improvement potential through early detection.
+
 
 ---
 
