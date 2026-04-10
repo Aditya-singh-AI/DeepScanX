@@ -147,7 +147,7 @@ It is NOT a medical device and is NOT intended for clinical diagnosis. Always co
 
 ## 👥 Team
 - **Aditya Singh** — AI/ML Core & Full-Stack lead
-- **Abhimet Mewada** — Strategy & Product
+- **Abhimet Mewada** — Strategy & Products
 
 ---
 
