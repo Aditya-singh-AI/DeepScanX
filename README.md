@@ -178,8 +178,8 @@ It is NOT a medical device and is NOT intended for clinical diagnosis. Always co
 ---
 
 ## 👥 Team
-- **Aditya Singh** — AI/ML Core & Full-Stack lead
-- **Abhishek Mewada** — Strategy & Products
+- **Aditya Singh** — Full Stack, AI/ML, Deep Learning, Computer Vision, Model Training, Deployment
+- **Abhishek Mewada** — Full Stack, API Development, UI/UX, Database, Integration
 
 ---
 
