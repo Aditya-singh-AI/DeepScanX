@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Diabetic Retinopathy — DeepScanX AI</title>
+  <link rel="icon" href="https://img.freepik.com/premium-photo/black-background-with-pink-orange-logo_978914-26588.jpg" type="image/png">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#050508;--bg2:#0a0a10;--surface:rgba(220,20,60,.06);--crimson:#dc143c;--crimson-d:#8b0000;--crimson-l:#ff4d6d;--rose:#ff6b8a;--white:#f8f8f8;--gray:#a0a0b0;--gray2:#6b6b80;--border:rgba(220,20,60,.15);--border2:rgba(255,255,255,.06);--radius:16px;--font:'Inter',system-ui,sans-serif;--font2:'Space Grotesk',sans-serif}
+    body{font-family:var(--font);background:var(--bg);color:var(--white);overflow-x:hidden;line-height:1.7}
+    .nav-wrap{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem 0;background:rgba(5,5,8,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+    .nav-inner{max-width:1320px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between}
+    .logo{display:flex;align-items:center;gap:.75rem;text-decoration:none}
+    .logo-icon{width:44px;height:44px;border-radius:50%;border:2px solid var(--crimson);object-fit:cover}
+    .logo-text{font-family:var(--font2);font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,#fff 40%,var(--crimson));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .nav-links{display:flex;align-items:center;gap:2rem;list-style:none}
+    .nav-links a{color:var(--gray);text-decoration:none;font-size:.9rem;transition:color .3s}
+    .nav-links a:hover{color:var(--white)}
+    .content{max-width:1100px;margin:100px auto 60px;padding:0 2rem}
+    .module-header{text-align:center;margin-bottom:3rem}
+    .module-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.45rem 1.2rem;border:1px solid var(--border);border-radius:50px;font-size:.78rem;color:var(--rose);text-transform:uppercase;letter-spacing:.5px;margin-bottom:1rem;background:rgba(220,20,60,.06)}
+    .module-badge .pulse{width:6px;height:6px;background:var(--crimson);border-radius:50%;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
+    .module-header h1{font-family:var(--font2);font-size:2.5rem;font-weight:700;margin-bottom:.5rem}
+    .module-header h1 .accent{color:var(--crimson-l)}
+    .module-header p{color:var(--gray);font-size:1.05rem}
+    .upload-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2.5rem;margin-bottom:2rem}
+    .upload-card h3{font-size:1.2rem;margin-bottom:1rem}
+    .upload-zone{border:2px dashed var(--border);border-radius:12px;padding:3rem;text-align:center;cursor:pointer;transition:all .3s;margin-bottom:1.5rem}
+    .upload-zone:hover{border-color:var(--crimson);background:rgba(220,20,60,.04)}
+    .upload-zone i{font-size:3rem;color:var(--crimson);margin-bottom:1rem}
+    .upload-zone p{color:var(--gray)}
+    .upload-zone .formats{font-size:.8rem;color:var(--gray2);margin-top:.5rem}
+    input[type="file"]{display:none}
+    .form-row{display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+    .form-group{flex:1;min-width:200px}
+    .form-group label{display:block;font-size:.85rem;color:var(--gray);margin-bottom:.4rem}
+    .form-group select{width:100%;padding:.6rem 1rem;background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:8px;color:var(--white);font-family:var(--font)}
+    .form-group select option{background:#1a1a2e}
+    .checkbox-row{display:flex;align-items:center;gap:.5rem;margin-bottom:1rem}
+    .checkbox-row input[type="checkbox"]{accent-color:var(--crimson);width:16px;height:16px}
+    .checkbox-row label{font-size:.9rem;color:var(--gray)}
+    .btn-analyze{display:flex;align-items:center;gap:.5rem;padding:.8rem 2rem;background:linear-gradient(135deg,var(--crimson),var(--crimson-d));border:none;border-radius:50px;color:#fff;font-size:1rem;font-weight:500;cursor:pointer;transition:all .4s;margin-top:1rem}
+    .btn-analyze:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(220,20,60,.4)}
+    .btn-analyze:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+    .result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:2rem;animation:fadeIn .6s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+    .result-header h2{font-size:1.3rem}
+
+    /* Severity Meter */
+    .severity-meter{margin:1.5rem 0;padding:1.5rem;background:rgba(255,255,255,.03);border-radius:12px;border:1px solid var(--border2)}
+    .severity-meter h4{font-size:.9rem;color:var(--gray);margin-bottom:1rem}
+    .severity-track{display:flex;height:12px;border-radius:6px;overflow:hidden;gap:3px}
+    .severity-segment{flex:1;border-radius:4px;transition:all .5s}
+    .severity-labels{display:flex;justify-content:space-between;margin-top:.5rem}
+    .severity-labels span{font-size:.7rem;color:var(--gray2)}
+    .severity-current{display:flex;align-items:center;gap:.5rem;margin-top:.8rem;font-size:1rem;font-weight:600}
+    .severity-dot{width:12px;height:12px;border-radius:50%}
+
+    .confidence-bar{margin:1rem 0;padding:1rem 1.5rem;background:rgba(255,255,255,.03);border-radius:12px;border:1px solid var(--border2)}
+    .confidence-bar .label{font-size:.85rem;color:var(--gray);margin-bottom:.5rem}
+    .bar-track{height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden}
+    .bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--crimson),var(--rose));transition:width 1s ease}
+    .confidence-value{font-size:1.1rem;font-weight:600;margin-top:.3rem}
+    .low-confidence-warning{display:flex;align-items:center;gap:.5rem;padding:.8rem 1rem;background:rgba(243,156,18,.1);border:1px solid rgba(243,156,18,.3);border-radius:8px;margin:1rem 0;color:#f39c12;font-size:.9rem}
+    .plots-grid{display:grid;grid-template-columns:1fr;gap:1.5rem;margin:1.5rem 0}
+    .plots-grid img{width:100%;border-radius:12px;border:1px solid var(--border2)}
+    .explanation-box{padding:1.5rem;background:rgba(220,20,60,.04);border:1px solid var(--border);border-radius:12px;margin:1.5rem 0}
+    .explanation-box h4{color:var(--crimson-l);margin-bottom:.5rem}
+    .explanation-box p{color:var(--gray);font-size:.9rem;line-height:1.8}
+    .ensemble-box{padding:1.5rem;background:rgba(108,99,255,.06);border:1px solid rgba(108,99,255,.2);border-radius:12px;margin:1.5rem 0}
+    .ensemble-box h4{color:#a78bfa;margin-bottom:1rem}
+    .ensemble-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem 1rem;background:rgba(108,99,255,.15);border-radius:50px;font-size:.85rem;color:#c4b5fd;margin-bottom:1rem}
+    .model-row{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.05)}
+    .model-row:last-child{border:none}
+    .model-name{color:var(--gray);font-size:.9rem}
+    .model-pred{color:var(--white);font-weight:500;font-size:.9rem}
+    .notes-section{margin:1.5rem 0}
+    .notes-section h4{margin-bottom:.5rem}
+    .notes-section textarea{width:100%;min-height:120px;padding:1rem;background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:12px;color:var(--white);font-family:var(--font);font-size:.9rem;resize:vertical;line-height:1.7}
+    .notes-section textarea:focus{outline:none;border-color:var(--crimson)}
+    .notes-section p.hint{font-size:.8rem;color:var(--gray2);margin-top:.3rem}
+    .download-section{display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap}
+    .btn-download{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.5rem;border-radius:50px;font-size:.9rem;font-weight:500;text-decoration:none;cursor:pointer;transition:all .3s;border:none;font-family:var(--font)}
+    .btn-download.primary{background:linear-gradient(135deg,var(--crimson),var(--crimson-d));color:#fff}
+    .btn-download.primary:hover{box-shadow:0 6px 24px rgba(220,20,60,.4);transform:translateY(-2px)}
+    .btn-download.secondary{background:rgba(255,255,255,.06);color:var(--white);border:1px solid var(--border)}
+    .btn-back{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1.2rem;background:rgba(220,20,60,.1);color:var(--crimson-l);border-radius:8px;text-decoration:none;font-size:.85rem;border:1px solid var(--border)}
+    @media(max-width:768px){.nav-links{display:none}.content{padding:0 1rem;margin-top:80px}.module-header h1{font-size:1.8rem}}
+  </style>
+</head>
+<body>
+  <nav class="nav-wrap"><div class="nav-inner">
+    <a href="{{ url_for('app1.home') }}" class="logo"><img src="https://img.freepik.com/premium-photo/black-background-with-pink-orange-logo_978914-26588.jpg" alt="Logo" class="logo-icon"><span class="logo-text">DeepScanX AI</span></a>
+    <ul class="nav-links"><li><a href="{{ url_for('app1.home') }}">Dashboard</a></li><li><a href="{{ url_for('app1.history') }}">History</a></li><li><a href="{{ url_for('app12.patients_list') }}">Patients</a></li></ul>
+    <a href="{{ url_for('app1.home') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Back</a>
+  </div></nav>
+
+  <div class="content">
+    <div class="module-header">
+      <div class="module-badge"><span class="pulse"></span> Ophthalmology AI Module</div>
+      <h1>Diabetic <span class="accent">Retinopathy</span></h1>
+      <p>Fundus image analysis for automated diabetic retinopathy severity classification</p>
+    </div>
+
+    {% with messages = get_flashed_messages() %}{% if messages %}
+    <div style="padding:1rem;background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);border-radius:12px;margin-bottom:1.5rem;">
+      {% for msg in messages %}<p style="color:#ff7675;font-size:.9rem;">{{ msg }}</p>{% endfor %}
+    </div>{% endif %}{% endwith %}
+
+    {% if not report %}
+    <div class="upload-card">
+      <h3><i class="fas fa-eye" style="color:var(--crimson);margin-right:.5rem"></i> Upload Fundus Image</h3>
+      <form method="POST" enctype="multipart/form-data">
+        <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p>Drag & drop fundus image, or <strong style="color:var(--crimson)">click to browse</strong></p>
+          <p class="formats">Supports: JPG, PNG, BMP, DICOM (.dcm)</p>
+          <p id="fileName" style="color:var(--crimson-l);margin-top:.5rem;font-weight:500;display:none"></p>
+        </div>
+        <input type="file" name="images" id="fileInput" accept=".jpg,.jpeg,.png,.bmp,.dcm,.dicom">
+        <div class="form-row"><div class="form-group"><label>Link to Patient (optional)</label>
+          <select name="patient_id"><option value="">— No patient selected —</option>
+            {% if patients %}{% for p in patients %}<option value="{{ p._id }}">{{ p.name }}</option>{% endfor %}{% endif %}
+          </select></div></div>
+        <div class="checkbox-row"><input type="checkbox" name="ensemble" value="true" id="ec"><label for="ec">Enable Model Ensembling</label></div>
+        <button type="submit" class="btn-analyze" id="btnAnalyze" disabled><i class="fas fa-brain"></i> Analyze Fundus</button>
+      </form>
+    </div>
+    {% endif %}
+
+    {% if report %}
+    <div class="result-card">
+      <div class="result-header">
+        <h2><i class="fas fa-eye" style="color:var(--crimson);margin-right:.5rem"></i> {{ report.filename }}</h2>
+        <span style="padding:.4rem 1rem;border-radius:50px;font-size:.85rem;font-weight:600;background:{{ report.severity_color }}22;color:{{ report.severity_color }};border:1px solid {{ report.severity_color }}55">
+          {{ report.cancer_status }}
+        </span>
+      </div>
+
+      <!-- Severity Meter -->
+      <div class="severity-meter">
+        <h4>DR Severity Level</h4>
+        <div class="severity-track">
+          {% for i in range(5) %}
+          <div class="severity-segment" style="background:{% if i <= report.severity_level %}{{ ['#27ae60','#f1c40f','#e67e22','#e74c3c','#8b0000'][i] }}{% else %}rgba(255,255,255,.08){% endif %}"></div>
+          {% endfor %}
+        </div>
+        <div class="severity-labels">
+          <span>No DR</span><span>Mild</span><span>Moderate</span><span>Severe</span><span>Proliferative</span>
+        </div>
+        <div class="severity-current">
+          <span class="severity-dot" style="background:{{ report.severity_color }}"></span>
+          Level {{ report.severity_level }}/4 — {{ report.predicted_class }}
+        </div>
+      </div>
+
+      <div class="confidence-bar">
+        <div class="label">Model Confidence</div>
+        {% set conf = report.confidence|float %}
+        <div class="bar-track"><div class="bar-fill" style="width:{{ (conf*100)|round(1) }}%"></div></div>
+        <div class="confidence-value">{{ '%.1f'|format(conf*100) }}%</div>
+      </div>
+      {% if report.low_confidence %}
+      <div class="low-confidence-warning"><i class="fas fa-exclamation-triangle"></i> Low confidence — manual review recommended.</div>
+      {% endif %}
+      <div class="plots-grid">
+        {% if report.results_plot %}<img src="{{ report.results_plot }}" alt="Grad-CAM">{% endif %}
+        {% if report.prob_plot %}<img src="{{ report.prob_plot }}" alt="Probability">{% endif %}
+      </div>
+      {% if report.ensemble_results %}
+      <div class="ensemble-box">
+        <h4><i class="fas fa-layer-group"></i> Ensemble Results</h4>
+        <div class="ensemble-badge"><i class="fas fa-check-double"></i> Agreement: {{ '%.0f'|format(report.ensemble_results.agreement_ratio*100) }}%</div>
+        <p style="color:var(--white);margin-bottom:.5rem"><strong>Ensemble:</strong> {{ report.ensemble_results.ensemble_prediction }} ({{ '%.1f'|format(report.ensemble_results.ensemble_confidence*100) }}%)</p>
+        {% for r in report.ensemble_results.individual %}
+        <div class="model-row"><span class="model-name">{{ r.model }}</span><span class="model-pred">{{ r.predicted_class }} ({{ '%.1f'|format(r.confidence*100) }}%)</span></div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <div class="explanation-box">
+        <h4><i class="fas fa-stethoscope"></i> Clinical Interpretation</h4>
+        <p>{{ report.explanation }}</p>
+      </div>
+      <div class="notes-section">
+        <h4><i class="fas fa-pen-fancy" style="color:var(--crimson)"></i> Physician's Notes</h4>
+        <textarea id="doctorNotes" placeholder="Add clinical notes..."></textarea>
+        <p class="hint">Included in PDF report.</p>
+      </div>
+      <div class="download-section">
+        <form method="POST" action="{{ url_for('app10.download_report') }}" style="display:inline">
+          <input type="hidden" name="predicted_class" value="{{ report.predicted_class }}">
+          <input type="hidden" name="confidence" value="{{ report.confidence }}">
+          <input type="hidden" name="cancer_status" value="{{ report.cancer_status }}">
+          <input type="hidden" name="filename" value="{{ report.filename }}">
+          <input type="hidden" name="explanation_text" value="{{ report.explanation }}">
+          <input type="hidden" name="probabilities_json" value='{{ report.probabilities|tojson }}'>
+          <input type="hidden" name="doctor_notes" id="dn" value="">
+          {% if report.ensemble_results %}<input type="hidden" name="ensemble_json" value='{{ report.ensemble_results|tojson }}'>{% endif %}
+          <button type="submit" class="btn-download primary" onclick="document.getElementById('dn').value=document.getElementById('doctorNotes').value">
+            <i class="fas fa-file-pdf"></i> Download Report (PDF)
+          </button>
+        </form>
+        <a href="{{ url_for('app10.page') }}" class="btn-download secondary"><i class="fas fa-redo"></i> Analyze Another</a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <script>
+    const fi=document.getElementById('fileInput'),fn=document.getElementById('fileName'),ba=document.getElementById('btnAnalyze'),dz=document.getElementById('dropZone');
+    if(fi)fi.addEventListener('change',function(){if(this.files.length){fn.textContent=this.files[0].name;fn.style.display='block';ba.disabled=false}});
+    if(dz){['dragenter','dragover'].forEach(e=>dz.addEventListener(e,ev=>{ev.preventDefault();dz.classList.add('dragover')}));['dragleave','drop'].forEach(e=>dz.addEventListener(e,ev=>{ev.preventDefault();dz.classList.remove('dragover')}));dz.addEventListener('drop',ev=>{const f=ev.dataTransfer.files;if(f.length){fi.files=f;fn.textContent=f[0].name;fn.style.display='block';ba.disabled=false}})}
+  </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+.hub-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.hub-topbar-wrapper {
+  background: rgba(10, 10, 16, 0.75);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 76px; /* Right beneath the global Navbar */
+  z-index: 90;
+  width: 100%;
+}
+
+.hub-topbar {
+  display: flex;
+  align-items: center;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.hub-topbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hub-tabs {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  margin: 0 auto;
+}
+
+.hub-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 50px;
+  color: var(--gray);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.hub-tab i {
+  font-size: 1rem;
+}
+
+.hub-tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--white);
+}
+
+.hub-tab.active {
+  background: rgba(220, 20, 60, 0.12);
+  color: var(--crimson-l);
+  border: 1px solid rgba(220, 20, 60, 0.3);
+  box-shadow: 0 0 15px rgba(220, 20, 60, 0.15) inset;
+}
+
+.hub-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Adjust Scanner content to eliminate double-margins */
+.hub-main-content .content {
+  margin-top: 40px; /* Overrides the 100px default margin if needed */
+}
+
+@media (max-width: 768px) {
+  .hub-topbar {
+    padding: 0 1rem;
+  }
+  .hub-tabs {
+    gap: 0.5rem;
+  }
+  .hub-tab {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+}

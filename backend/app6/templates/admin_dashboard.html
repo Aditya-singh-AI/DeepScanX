@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — DeepScanX AI</title>
+  <link rel="icon" href="https://img.freepik.com/premium-photo/black-background-with-pink-orange-logo_978914-26588.jpg"
+    type="image/png">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #141414;
+      --bg-card: rgba(139, 0, 0, 0.08);
+      --text-primary: #ffffff;
+      --text-secondary: #e0e0e0;
+      --text-muted: #b0b0b0;
+      --accent-primary: #dc143c;
+      --accent-secondary: #8b0000;
+      --accent-light: #ff6b6b;
+      --gradient-primary: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+      --gradient-glow: linear-gradient(135deg, rgba(220, 20, 60, 0.3) 0%, rgba(139, 0, 0, 0.3) 100%);
+      --border-color: rgba(220, 20, 60, 0.3);
+      --shadow-glow: 0 0 30px rgba(220, 20, 60, 0.3);
+      --spotlight-color: radial-gradient(circle at 50% 20%, rgba(220, 20, 60, 0.15) 0%, transparent 60%);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .spotlight-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--spotlight-color);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header {
+      padding: 1rem 0;
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      text-decoration: none;
+    }
+
+    .logo img {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--accent-primary);
+      object-fit: cover;
+    }
+
+    .logo-text {
+      font-size: 1.2rem;
+      font-weight: 600;
+      background: linear-gradient(45deg, white 50%, red 50%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="spotlight-bg"></div>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <a href="{{ url_for('app1.home') }}" class="logo">
+          <img src="https://img.freepik.com/premium-photo/black-background-with-pink-orange-logo_978914-26588.jpg"
+            alt="DeepScanX AI Logo">
+          <span class="logo-text">DeepScanX AI</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="admin-page">
+      <div class="admin-header">
+        <div>
+          <h1>🛡️ Admin Dashboard</h1>
+          <p class="subtitle">Platform overview and user management</p>
+        </div>
+        <a href="{{ url_for('app1.home') }}" class="btn-back">← Dashboard</a>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ total_users }}</div>
+            <div class="stat-label">Total Users</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ active_users }}</div>
+            <div class="stat-label">Active Users</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔬</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ total_predictions }}</div>
+            <div class="stat-label">Total Predictions</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🫁</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ module_stats.get('lung_colon', 0) }}</div>
+            <div class="stat-label">Lung/Colon Scans</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔴</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ module_stats.get('breast_cancer', 0) }}</div>
+            <div class="stat-label">Breast Cancer Scans</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🧬</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ module_stats.get('lung_cancer', 0) }}</div>
+            <div class="stat-label">Lung Cancer Scans</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="admin-actions">
+        <a href="{{ url_for('app6.users') }}" class="action-btn">
+          <span>👤</span> Manage Users
+        </a>
+      </div>
+
+      <!-- Recent Predictions -->
+      <div class="section-title">🕐 Recent Predictions</div>
+      <div class="recent-table-wrapper">
+        {% if recent_predictions %}
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Module</th>
+              <th>Predicted Class</th>
+              <th>Confidence</th>
+              <th>File</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in recent_predictions %}
+            <tr>
+              <td><span class="module-tag">{{ p.module or '—' }}</span></td>
+              <td>{{ p.predicted_class or '—' }}</td>
+              <td>
+                {% set conf = p.confidence | float %}
+                {{ '%.1f'|format(conf * 100 if conf <= 1 else conf) }}% </td>
+              <td class="fname">{{ p.filename or '—' }}</td>
+              <td>{% if p.timestamp %}{{ p.timestamp.strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p style="color:#666;text-align:center;padding:30px">No predictions yet.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <style>
+      .admin-page {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0 20px;
+      }
+
+      .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 30px;
+      }
+
+      .admin-header h1 {
+        font-size: 2rem;
+        color: #6c63ff;
+        margin: 0 0 6px 0;
+      }
+
+      .subtitle {
+        color: #aaa;
+        margin: 0;
+      }
+
+      .btn-back {
+        padding: 8px 18px;
+        background: rgba(108, 99, 255, 0.15);
+        color: #6c63ff;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 14px;
+        border: 1px solid rgba(108, 99, 255, 0.3);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+
+      .stat-card {
+        background: rgba(108, 99, 255, 0.08);
+        border: 1px solid rgba(108, 99, 255, 0.2);
+        border-radius: 14px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .stat-icon {
+        font-size: 2rem;
+      }
+
+      .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #6c63ff;
+        line-height: 1;
+      }
+
+      .stat-label {
+        font-size: 12px;
+        color: #aaa;
+        margin-top: 4px;
+      }
+
+      .admin-actions {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 30px;
+      }
+
+      .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #6c63ff, #a74fff);
+        color: #fff;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .action-btn:hover {
+        opacity: 0.9;
+      }
+
+      .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #c0b8ff;
+        margin-bottom: 12px;
+      }
+
+      .recent-table-wrapper {
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+      }
+
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: rgba(13, 13, 26, 0.8);
+      }
+
+      .admin-table thead th {
+        background: rgba(108, 99, 255, 0.2);
+        padding: 12px 16px;
+        font-size: 13px;
+        color: #c0b8ff;
+        text-align: left;
+        border-bottom: 1px solid rgba(108, 99, 255, 0.3);
+      }
+
+      .admin-table td {
+        padding: 12px 16px;
+        font-size: 13px;
+        color: #ddd;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .admin-table tr:hover td {
+        background: rgba(108, 99, 255, 0.06);
+      }
+
+      .module-tag {
+        display: inline-block;
+        padding: 3px 8px;
+        background: rgba(108, 99, 255, 0.15);
+        color: #a89dff;
+        border-radius: 6px;
+        font-size: 12px;
+      }
+
+      .fname {
+        font-family: monospace;
+        font-size: 11px;
+        color: #888;
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    </style>
+  </div> <!-- end container -->
+</body>
+
+</html>

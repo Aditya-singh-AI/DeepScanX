@@ -1,0 +1,539 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepScanX Clinical Assistant — DeepScanX AI</title>
+    <link rel="icon" href="https://img.freepik.com/premium-photo/black-background-with-pink-orange-logo_978914-26588.jpg" type="image/png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Puter.js — free browser-side AI, no API key needed -->
+    <script src="https://js.puter.com/v2/"></script>
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: rgba(139, 0, 0, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+            --text-muted: #b0b0b0;
+            --accent: #dc143c;
+            --accent-dark: #8b0000;
+            --accent-glow: rgba(220, 20, 60, 0.35);
+            --border: rgba(220, 20, 60, 0.25);
+            --purple: #6c63ff;
+            --purple-glow: rgba(108, 99, 255, 0.4);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ── SPOTLIGHT ── */
+        .spotlight {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(220,20,60,0.12) 0%, transparent 65%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            padding: 0.85rem 2rem;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+        .logo img { height: 38px; width: 38px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; }
+        .logo-text {
+            font-size: 1.1rem; font-weight: 600;
+            background: linear-gradient(45deg, #fff 50%, var(--accent) 50%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .header-right { display: flex; align-items: center; gap: 1rem; }
+
+        .status-pill {
+            display: flex; align-items: center; gap: 6px;
+            background: rgba(0,200,100,0.1); border: 1px solid rgba(0,200,100,0.3);
+            border-radius: 20px; padding: 4px 12px; font-size: 12px; color: #4ade80;
+        }
+        .status-dot {
+            width: 7px; height: 7px; border-radius: 50%; background: #4ade80;
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .btn-back {
+            display: flex; align-items: center; gap: 6px;
+            padding: 7px 16px;
+            background: rgba(220,20,60,0.1);
+            color: var(--accent);
+            border: 1px solid rgba(220,20,60,0.3);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-back:hover { background: rgba(220,20,60,0.2); border-color: var(--accent); }
+
+        /* ── MAIN LAYOUT ── */
+        .chat-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 860px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1.5rem 1.5rem 1.25rem;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── CHAT TITLE BAR ── */
+        .chat-title-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .bot-avatar {
+            width: 52px; height: 52px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 0 20px var(--accent-glow);
+            flex-shrink: 0;
+        }
+
+        .chat-title-info h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            background: var(--gradient-primary);
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        .chat-title-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .powered-badge {
+            margin-left: auto;
+            font-size: 11px;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 4px 10px;
+        }
+        .powered-badge span { color: var(--purple); font-weight: 500; }
+
+        /* ── MESSAGES ── */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: rgba(13, 13, 20, 0.7);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+        .chat-messages::-webkit-scrollbar { width: 5px; }
+        .chat-messages::-webkit-scrollbar-track { background: transparent; }
+        .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        .msg { display: flex; gap: 10px; align-items: flex-start; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .msg-avatar {
+            width: 34px; height: 34px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; flex-shrink: 0; margin-top: 2px;
+        }
+        .msg.bot .msg-avatar { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); }
+        .msg.user .msg-avatar { background: linear-gradient(135deg, #6c63ff, #a74fff); }
+
+        .msg-bubble {
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.75;
+            max-width: 85%;
+            word-break: break-word;
+        }
+        .msg.bot .msg-bubble {
+            background: rgba(220,20,60,0.08);
+            border: 1px solid rgba(220,20,60,0.18);
+            color: var(--text-secondary);
+            border-top-left-radius: 4px;
+        }
+        .msg.user { flex-direction: row-reverse; }
+        .msg.user .msg-bubble {
+            background: rgba(108,99,255,0.15);
+            border: 1px solid rgba(108,99,255,0.3);
+            color: var(--text-primary);
+            text-align: right;
+            border-top-right-radius: 4px;
+        }
+
+        /* Markdown-like formatting in bot messages */
+        .msg-bubble strong { color: #ff8fa3; }
+        .msg-bubble em { color: #a89dff; }
+        .msg-bubble code {
+            background: rgba(255,255,255,0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .msg-bubble ul, .msg-bubble ol {
+            padding-left: 1.4rem;
+            margin: 6px 0;
+        }
+        .msg-bubble li { margin: 3px 0; }
+
+        /* Typing indicator */
+        .typing-dots {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            padding: 4px 2px;
+        }
+        .typing-dots span {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--accent);
+            animation: bounce 1.3s infinite;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+            40% { transform: translateY(-8px); opacity: 1; }
+        }
+
+        /* ── SUGGESTIONS ── */
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .suggestion {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(220,20,60,0.1);
+            color: #ff8fa3;
+            border: 1px solid rgba(220,20,60,0.25);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .suggestion:hover { background: rgba(220,20,60,0.22); border-color: var(--accent); color: #fff; }
+
+        /* ── INPUT BAR ── */
+        .input-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        #chatInput {
+            flex: 1;
+            background: rgba(13,13,20,0.9);
+            border: 1px solid rgba(220,20,60,0.25);
+            border-radius: 12px;
+            padding: 13px 18px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            resize: none;
+        }
+        #chatInput:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(220,20,60,0.12);
+        }
+        #chatInput::placeholder { color: #555; }
+
+        #sendBtn {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(220,20,60,0.35);
+        }
+        #sendBtn:hover { opacity: 0.88; transform: scale(1.05); }
+        #sendBtn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+        .disclaimer {
+            text-align: center;
+            font-size: 11px;
+            color: #444;
+            margin-top: 8px;
+            flex-shrink: 0;
+        }
+
+        /* ── ERROR BANNER ── */
+        .error-msg .msg-bubble {
+            background: rgba(255,80,80,0.1) !important;
+            border-color: rgba(255,80,80,0.3) !important;
+            color: #ff8fa3 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="spotlight"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <a href="{{ url_for('app1.home') }}" class="logo">
+            <img src="https://img.freepik.com/premium-photo/black-background-with-pink-orange-logo_978914-26588.jpg" alt="DeepScanX AI">
+            <span class="logo-text">DeepScanX AI</span>
+        </a>
+        <div class="header-right">
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                AI Online
+            </div>
+            <a href="{{ url_for('app1.home') }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+        </div>
+    </header>
+
+    <!-- Chat UI -->
+    <div class="chat-wrapper">
+
+        <!-- Title Bar -->
+        <div class="chat-title-bar">
+            <div class="bot-avatar">🩺</div>
+            <div class="chat-title-info">
+                <h1>DeepScanX Clinical Assistant</h1>
+                <p>AI-powered medical Q&amp;A for radiology &amp; pathology</p>
+            </div>
+            <div class="powered-badge">Powered by <span>Puter AI</span> · Free</div>
+        </div>
+
+        <!-- Messages -->
+        <div class="chat-messages" id="chatMessages">
+            <div class="msg bot" id="welcomeMsg">
+                <div class="msg-avatar">🩺</div>
+                <div class="msg-bubble">
+                    Hello! I'm <strong>DeepScanX</strong>, your clinical AI assistant.<br><br>
+                    I can help you understand AI-driven cancer detection results, explain histopathology concepts, and answer medical research questions.<br><br>
+                    Try one of these:
+                    <div class="suggestions">
+                        <span class="suggestion" onclick="sendSuggestion(this)">💊 What does IDC+ mean?</span>
+                        <span class="suggestion" onclick="sendSuggestion(this)">🔬 Explain Grad-CAM heatmaps</span>
+                        <span class="suggestion" onclick="sendSuggestion(this)">🫁 What is Invasive Ductal Carcinoma?</span>
+                        <span class="suggestion" onclick="sendSuggestion(this)">🧬 Difference between benign and malignant?</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input -->
+        <div class="input-bar">
+            <input
+                type="text"
+                id="chatInput"
+                placeholder="Ask about a diagnosis, cancer type, or AI explanation…"
+                autocomplete="off"
+                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"
+            />
+            <button id="sendBtn" onclick="sendMessage()" title="Send (Enter)">
+                <i class="fas fa-paper-plane" id="sendIcon"></i>
+                <span id="sendLoader" style="display:none">⏳</span>
+            </button>
+        </div>
+
+        <p class="disclaimer">⚠️ DeepScanX is for research &amp; educational purposes only. Not a substitute for clinical diagnosis.</p>
+    </div>
+
+<script>
+const SYSTEM_PROMPT = `You are DeepScanX, an intelligent clinical AI assistant embedded within the DeepScanX AI radiology platform. Your role is to help pathology researchers, medical students, and doctors understand AI-driven histopathology and radiology results.
+
+Guidelines:
+- Answer questions about cancer types, tissue classification, and AI predictions clearly and accurately
+- When given a diagnosis context, explain it in simple, compassionate language
+- Always emphasize that AI predictions are for research/educational purposes ONLY and not a replacement for professional medical advice
+- Never provide a definitive medical diagnosis
+- Be concise but thorough — aim for 2–4 paragraph answers
+- Use bullet points where helpful for readability
+- If asked non-medical questions, gently redirect to the platform's purpose`;
+
+const chatMessages = document.getElementById('chatMessages');
+let isLoading = false;
+
+function scrollToBottom() {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function sendSuggestion(el) {
+    document.getElementById('chatInput').value = el.textContent.replace(/^[^\s]+\s/, '');
+    sendMessage();
+}
+
+function addMessage(content, role, isHTML = false) {
+    const div = document.createElement('div');
+    div.className = `msg ${role === 'user' ? 'user' : 'bot'}${role === 'error' ? ' error-msg' : ''}`;
+
+    const avatar = document.createElement('div');
+    avatar.className = 'msg-avatar';
+    avatar.textContent = role === 'user' ? '👤' : '🩺';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+
+    if (isHTML) {
+        bubble.innerHTML = content;
+    } else {
+        // Basic markdown-to-HTML conversion
+        bubble.innerHTML = content
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code>$1</code>')
+            .replace(/^• (.+)/gm, '<li>$1</li>')
+            .replace(/^- (.+)/gm, '<li>$1</li>')
+            .replace(/^(\d+)\. (.+)/gm, '<li>$2</li>')
+            .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>');
+    }
+
+    div.appendChild(avatar);
+    div.appendChild(bubble);
+    chatMessages.appendChild(div);
+    scrollToBottom();
+    return bubble;
+}
+
+function addTypingIndicator() {
+    const div = document.createElement('div');
+    div.className = 'msg bot';
+    div.id = 'typingIndicator';
+
+    const avatar = document.createElement('div');
+    avatar.className = 'msg-avatar';
+    avatar.textContent = '🩺';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    bubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+
+    div.appendChild(avatar);
+    div.appendChild(bubble);
+    chatMessages.appendChild(div);
+    scrollToBottom();
+}
+
+function removeTypingIndicator() {
+    const el = document.getElementById('typingIndicator');
+    if (el) el.remove();
+}
+
+function setLoading(state) {
+    isLoading = state;
+    const btn = document.getElementById('sendBtn');
+    const icon = document.getElementById('sendIcon');
+    const loader = document.getElementById('sendLoader');
+    const input = document.getElementById('chatInput');
+    btn.disabled = state;
+    input.disabled = state;
+    icon.style.display = state ? 'none' : 'inline';
+    loader.style.display = state ? 'inline' : 'none';
+}
+
+async function sendMessage() {
+    if (isLoading) return;
+
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    input.value = '';
+    addMessage(msg, 'user');
+    addTypingIndicator();
+    setLoading(true);
+
+    try {
+        // Use Puter.js AI — free, no API key required
+        const fullPrompt = `${SYSTEM_PROMPT}\n\nUser question: ${msg}`;
+        const response = await puter.ai.chat(fullPrompt);
+
+        // puter.ai.chat returns a string or an object with .message.content
+        let reply = '';
+        if (typeof response === 'string') {
+            reply = response;
+        } else if (response && response.message && response.message.content) {
+            reply = response.message.content;
+        } else if (response && response.toString) {
+            reply = response.toString();
+        } else {
+            reply = 'I received a response but could not parse it. Please try again.';
+        }
+
+        removeTypingIndicator();
+        addMessage(reply, 'bot');
+
+    } catch (err) {
+        removeTypingIndicator();
+        console.error('Puter AI error:', err);
+        const errMsg = err && err.message ? err.message : String(err);
+        addMessage(
+            `⚠️ Could not get a response right now.<br><small style="color:#666">${errMsg}</small><br><br>Please try again in a moment.`,
+            'error',
+            true
+        );
+    } finally {
+        setLoading(false);
+        document.getElementById('chatInput').focus();
+    }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Patient Timeline — DeepScanX AI</title>
+  <link rel="icon" href="https://img.freepik.com/premium-photo/black-background-with-pink-orange-logo_978914-26588.jpg">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}:root{--bg:#050508;--surface:rgba(220,20,60,.06);--crimson:#dc143c;--crimson-d:#8b0000;--crimson-l:#ff4d6d;--white:#f8f8f8;--gray:#a0a0b0;--gray2:#6b6b80;--border:rgba(220,20,60,.15);--border2:rgba(255,255,255,.06);--radius:16px;--font:'Inter',sans-serif;--font2:'Space Grotesk',sans-serif}
+    body{font-family:var(--font);background:var(--bg);color:var(--white);line-height:1.7}
+    .nav-wrap{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem 0;background:rgba(5,5,8,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}.nav-inner{max-width:1320px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between}
+    .logo{display:flex;align-items:center;gap:.75rem;text-decoration:none}.logo-icon{width:44px;height:44px;border-radius:50%;border:2px solid var(--crimson);object-fit:cover}.logo-text{font-family:var(--font2);font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,#fff 40%,var(--crimson));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .btn-back{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1.2rem;background:rgba(220,20,60,.1);color:var(--crimson-l);border-radius:8px;text-decoration:none;font-size:.85rem;border:1px solid var(--border)}
+    .content{max-width:1100px;margin:100px auto 60px;padding:0 2rem}
+    .profile-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:2rem}
+    .profile-header{display:flex;gap:1.5rem;align-items:center;margin-bottom:1.5rem}
+    .avatar-lg{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--crimson),var(--crimson-d));display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:#fff}
+    .profile-info h2{font-family:var(--font2);font-size:1.5rem;margin-bottom:.3rem}
+    .profile-meta{display:flex;gap:1.5rem;flex-wrap:wrap}
+    .profile-meta span{font-size:.85rem;color:var(--gray);display:flex;align-items:center;gap:.3rem}
+    .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:2rem}
+    .chart-card h3{font-size:1.1rem;margin-bottom:1rem;color:var(--white)}
+    .chart-wrap{height:300px;position:relative}
+    .scan-timeline{margin-top:2rem}
+    .scan-timeline h3{font-size:1.1rem;margin-bottom:1.5rem}
+    .timeline-item{display:flex;gap:1.5rem;padding:1.2rem;background:rgba(255,255,255,.02);border:1px solid var(--border2);border-radius:12px;margin-bottom:1rem;transition:all .3s}
+    .timeline-item:hover{border-color:var(--border);background:var(--surface)}
+    .timeline-dot{width:12px;height:12px;border-radius:50%;margin-top:6px;flex-shrink:0}
+    .timeline-dot.positive{background:#e74c3c}.timeline-dot.negative{background:#27ae60}
+    .timeline-content{flex:1}
+    .timeline-content .module-tag{font-size:.75rem;padding:.2rem .6rem;border-radius:20px;background:rgba(220,20,60,.1);color:var(--crimson-l);display:inline-block;margin-bottom:.3rem}
+    .timeline-content .pred{font-weight:600;font-size:.95rem}
+    .timeline-content .meta{font-size:.8rem;color:var(--gray);margin-top:.3rem}
+    .empty-timeline{text-align:center;padding:3rem;color:var(--gray2)}
+    .edit-btn{padding:.4rem 1rem;background:rgba(220,20,60,.1);border:1px solid var(--border);border-radius:8px;color:var(--crimson-l);cursor:pointer;font-size:.8rem;font-family:var(--font)}
+    .delete-btn{padding:.4rem 1rem;background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);border-radius:8px;color:#ff7675;cursor:pointer;font-size:.8rem;font-family:var(--font)}
+  </style>
+</head>
+<body>
+  <nav class="nav-wrap"><div class="nav-inner"><a href="{{ url_for('app1.home') }}" class="logo"><img src="https://img.freepik.com/premium-photo/black-background-with-pink-orange-logo_978914-26588.jpg" class="logo-icon"><span class="logo-text">DeepScanX AI</span></a><a href="{{ url_for('app12.patients_list') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Patients</a></div></nav>
+  <div class="content">
+    {% with messages = get_flashed_messages() %}{% if messages %}<div style="padding:1rem;background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.3);border-radius:12px;margin-bottom:1rem">{% for m in messages %}<p style="color:#55efc4;font-size:.9rem">{{ m }}</p>{% endfor %}</div>{% endif %}{% endwith %}
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="avatar-lg">{{ patient.name[0]|upper }}</div>
+        <div class="profile-info">
+          <h2>{{ patient.name }}</h2>
+          <div class="profile-meta">
+            {% if patient.age %}<span><i class="fas fa-birthday-cake"></i> {{ patient.age }} years</span>{% endif %}
+            {% if patient.gender %}<span><i class="fas fa-venus-mars"></i> {{ patient.gender }}</span>{% endif %}
+            {% if patient.medical_record_number %}<span><i class="fas fa-id-card"></i> {{ patient.medical_record_number }}</span>{% endif %}
+            <span><i class="fas fa-calendar"></i> Created {{ patient.created_at.strftime('%Y-%m-%d') if patient.created_at else 'N/A' }}</span>
+          </div>
+        </div>
+      </div>
+      {% if patient.notes %}<p style="color:var(--gray);font-size:.9rem;padding:1rem;background:rgba(255,255,255,.03);border-radius:8px">{{ patient.notes }}</p>{% endif %}
+      <div style="display:flex;gap:.5rem;margin-top:1rem">
+        <form method="POST" action="{{ url_for('app12.delete_patient', patient_id=patient._id) }}" onsubmit="return confirm('Delete this patient?')"><button type="submit" class="delete-btn"><i class="fas fa-trash"></i> Delete</button></form>
+      </div>
+    </div>
+
+    {% if predictions %}
+    <div class="chart-card">
+      <h3><i class="fas fa-chart-line" style="color:var(--crimson);margin-right:.5rem"></i> Confidence Over Time</h3>
+      <div class="chart-wrap"><canvas id="timelineChart"></canvas></div>
+    </div>
+    {% endif %}
+
+    <div class="scan-timeline">
+      <h3><i class="fas fa-history" style="color:var(--crimson);margin-right:.5rem"></i> Scan History ({{ predictions|length }})</h3>
+      {% if predictions %}
+        {% for p in predictions %}
+        <div class="timeline-item">
+          <div class="timeline-dot {% if 'Positive' in (p.cancer_status or '') or 'Malignant' in (p.cancer_status or '') %}positive{% else %}negative{% endif %}"></div>
+          <div class="timeline-content">
+            <span class="module-tag">{{ p.module|replace('_',' ')|title }}</span>
+            <div class="pred">{{ p.predicted_class or '—' }} — {{ p.cancer_status or '—' }}</div>
+            <div class="meta">
+              {% set c = p.confidence|float %}Confidence: {{ '%.1f'|format(c*100 if c<=1 else c) }}%
+              &bull; {{ p.timestamp.strftime('%Y-%m-%d %H:%M') if p.timestamp else '—' }}
+              &bull; {{ p.filename or '' }}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-timeline"><i class="fas fa-microscope" style="font-size:2rem;margin-bottom:.5rem"></i><p>No scans linked to this patient yet.</p></div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if predictions %}
+  <script>
+    const data = {{ timeline_data|safe }};
+    if(data.length) {
+      const ctx = document.getElementById('timelineChart').getContext('2d');
+      const moduleColors = {'lung_cancer':'#e74c3c','breast_cancer':'#e91e63','lung_colon':'#ff9800','skin_cancer':'#9c27b0','chest_xray':'#2196f3','diabetic_retinopathy':'#4caf50'};
+      new Chart(ctx, {
+        type:'line',
+        data:{labels:data.map(d=>d.date),datasets:[{label:'Confidence %',data:data.map(d=>d.confidence),borderColor:'#dc143c',backgroundColor:'rgba(220,20,60,.1)',fill:true,tension:.4,pointBackgroundColor:data.map(d=>moduleColors[d.module]||'#dc143c'),pointRadius:6,pointHoverRadius:8}]},
+        options:{responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:100,ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}},x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,.03)'}}},plugins:{legend:{labels:{color:'#ccc'}},tooltip:{callbacks:{afterLabel:function(ctx){const d=data[ctx.dataIndex];return`Module: ${d.module}\nClass: ${d.predicted_class}\nStatus: ${d.cancer_status}`}}}}}
+      });
+    }
+  </script>
+  {% endif %}
+</body>
+</html>

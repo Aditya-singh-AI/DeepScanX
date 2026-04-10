@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Review Prediction — DeepScanX AI</title>
+  <link rel="icon" href="https://img.freepik.com/premium-photo/black-background-with-pink-orange-logo_978914-26588.jpg">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}:root{--bg:#050508;--surface:rgba(220,20,60,.06);--crimson:#dc143c;--crimson-l:#ff4d6d;--white:#f8f8f8;--gray:#a0a0b0;--gray2:#6b6b80;--border:rgba(220,20,60,.15);--border2:rgba(255,255,255,.06);--radius:16px;--font:'Inter',sans-serif;--font2:'Space Grotesk',sans-serif}
+    body{font-family:var(--font);background:var(--bg);color:var(--white);line-height:1.7}
+    .content{max-width:800px;margin:40px auto;padding:0 2rem}
+    .review-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:2rem}
+    h1{font-family:var(--font2);font-size:1.8rem;margin-bottom:.5rem}h1 .accent{color:var(--crimson-l)}
+    .subtitle{color:var(--gray);margin-bottom:2rem}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+    .info-item{padding:1rem;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid var(--border2)}
+    .info-item .lbl{font-size:.8rem;color:var(--gray);margin-bottom:.3rem}
+    .info-item .val{font-size:1rem;font-weight:600}
+    .message-box{padding:1rem;background:rgba(220,20,60,.04);border:1px solid var(--border);border-radius:8px;margin-bottom:1.5rem}
+    .message-box .from{font-size:.8rem;color:var(--crimson-l);margin-bottom:.3rem}
+    .comments-section{margin-top:2rem}
+    .comments-section h3{font-size:1rem;margin-bottom:1rem}
+    .comment{padding:.8rem;background:rgba(255,255,255,.03);border-radius:8px;margin-bottom:.5rem}
+    .comment .author{font-size:.8rem;color:var(--crimson-l);margin-bottom:.3rem}
+    .comment .text{font-size:.9rem;color:var(--gray)}
+    .comment .time{font-size:.7rem;color:var(--gray2);margin-top:.3rem}
+    .comment-form{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border2)}
+    .comment-form h3{font-size:1rem;margin-bottom:1rem}
+    .comment-form input,.comment-form textarea{width:100%;padding:.6rem 1rem;background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:8px;color:var(--white);font-family:var(--font);margin-bottom:.8rem}
+    .comment-form textarea{min-height:100px;resize:vertical}
+    .btn-submit{padding:.6rem 1.5rem;background:linear-gradient(135deg,var(--crimson),#8b0000);border:none;border-radius:50px;color:#fff;cursor:pointer;font-family:var(--font);font-size:.9rem;transition:all .3s}
+    .btn-submit:hover{box-shadow:0 6px 24px rgba(220,20,60,.4);transform:translateY(-2px)}
+    @media(max-width:600px){.info-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="content">
+    {% with messages = get_flashed_messages() %}{% if messages %}<div style="padding:1rem;background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.3);border-radius:12px;margin-bottom:1rem">{% for m in messages %}<p style="color:#55efc4;font-size:.9rem">{{ m }}</p>{% endfor %}</div>{% endif %}{% endwith %}
+    <div class="review-card">
+      <h1><i class="fas fa-user-md" style="color:var(--crimson)"></i> Second Opinion <span class="accent">Review</span></h1>
+      <p class="subtitle">Requested by {{ opinion.requester_name }}</p>
+      <div class="info-grid">
+        <div class="info-item"><div class="lbl">Module</div><div class="val">{{ opinion.prediction_data.module|replace('_',' ')|title }}</div></div>
+        <div class="info-item"><div class="lbl">Prediction</div><div class="val">{{ opinion.prediction_data.predicted_class }}</div></div>
+        <div class="info-item"><div class="lbl">Status</div><div class="val">{{ opinion.prediction_data.cancer_status }}</div></div>
+        <div class="info-item"><div class="lbl">Confidence</div><div class="val">{{ opinion.prediction_data.confidence }}</div></div>
+        <div class="info-item"><div class="lbl">File</div><div class="val">{{ opinion.prediction_data.filename }}</div></div>
+        <div class="info-item"><div class="lbl">Date</div><div class="val">{{ opinion.prediction_data.timestamp.strftime('%Y-%m-%d') if opinion.prediction_data.timestamp else '—' }}</div></div>
+      </div>
+      {% if opinion.message %}<div class="message-box"><div class="from"><i class="fas fa-comment"></i> Message from requester:</div><p style="color:var(--gray);font-size:.9rem">{{ opinion.message }}</p></div>{% endif %}
+
+      {% if opinion.comments %}
+      <div class="comments-section">
+        <h3><i class="fas fa-comments" style="color:var(--crimson)"></i> Reviews ({{ opinion.comments|length }})</h3>
+        {% for c in opinion.comments %}
+        <div class="comment"><div class="author">{{ c.reviewer_name }}</div><div class="text">{{ c.text }}</div><div class="time">{{ c.created_at.strftime('%Y-%m-%d %H:%M') if c.created_at else '' }}</div></div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="comment-form">
+        <h3><i class="fas fa-pen" style="color:var(--crimson)"></i> Add Your Review</h3>
+        <form method="POST" action="{{ url_for('app13.add_comment', token=token) }}">
+          <input type="text" name="reviewer_name" placeholder="Your name" value="{{ user.name if user else '' }}">
+          <textarea name="comment" placeholder="Write your review, clinical opinion, or comments here..." required></textarea>
+          <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Submit Review</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

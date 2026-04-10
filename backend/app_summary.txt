@@ -1,0 +1,156 @@
+
+--- app10\routes.py ---
+"""
+app10/routes.py — Diabetic Retinopathy Screening
+Fundus image analysis for eye disease severity classification.
+"""
+import base64
+import io
+import os
+import json
+import numpy as np
+import cv2
+
+--- app11\routes.py ---
+"""
+app11/routes.py — Whole Slide Image (WSI) Viewer
+High-resolution pathology image viewer with click-to-analyze AI patches.
+Uses OpenSeadragon (client-side) with PIL-based tiling (server-side).
+"""
+import base64
+import io
+import os
+import math
+import json
+
+--- app12\routes.py ---
+"""
+app12/routes.py — Patient Management & Longitudinal Tracking
+CRUD for patient profiles and timeline visualization of scan history.
+"""
+import datetime
+import json
+from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
+from utils.helpers import login_required
+from app2.models import db, get_object_id
+from bson.objectid import ObjectId
+
+--- app13\routes.py ---
+"""
+app13/routes.py — Second Opinion / Collaboration System
+Allows doctors to request peer review of AI predictions with secure shareable links.
+"""
+import datetime
+import secrets
+import json
+from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
+from utils.helpers import login_required, optional_login
+from app2.models import db, get_object_id
+
+--- app1\routes.py ---
+from flask import Blueprint, render_template, request, redirect, url_for, send_file
+from utils.helpers import login_required, optional_login, save_prediction
+from app2.models import db
+import io
+
+bp = Blueprint('app1', __name__, template_folder='templates')
+
+
+@bp.route('/')
+@optional_login
+
+--- app2\routes.py ---
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, make_response, jsonify
+from flask_mail import Mail, Message
+from .models import db, get_object_id
+from werkzeug.security import generate_password_hash, check_password_hash
+import random
+import string
+import os
+import jwt
+import datetime
+import config  # centralized .env loader
+
+--- app3\routes.py ---
+# routes.py
+import base64
+import io
+import os
+import json
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from flask import Blueprint, redirect, url_for, request, flash, render_template, send_file
+from utils.helpers import login_required, save_prediction
+
+--- app4\routes.py ---
+# routes.py — Breast Cancer IDC Detection
+from flask import Blueprint, render_template, redirect, url_for, request, current_app, send_file, flash
+from utils.helpers import login_required, save_prediction
+from utils.report_generator import generate_detailed_report
+from utils.dicom_utils import is_dicom_file, parse_dicom
+from utils.ensemble import load_ensemble_models, ensemble_predict
+from app2.models import db, get_object_id
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+--- app5\routes.py ---
+from flask import Blueprint, render_template, redirect, url_for, request, flash, send_file
+from utils.helpers import login_required, save_prediction
+from utils.report_generator import generate_detailed_report
+from utils.dicom_utils import is_dicom_file, parse_dicom
+from utils.ensemble import load_ensemble_models, ensemble_predict
+from app2.models import db, get_object_id
+import torch
+from torchvision import transforms, models
+from PIL import Image, ImageEnhance
+import torch.nn.functional as F
+
+--- app6\routes.py ---
+"""
+app6/routes.py — Admin Panel Blueprint
+Only accessible by users with role == 'admin'
+"""
+from flask import Blueprint, render_template, redirect, url_for, request, flash
+from utils.helpers import role_required
+from app2.models import db, get_object_id
+import datetime
+
+bp = Blueprint('app6', __name__, template_folder='templates')
+
+--- app7\routes.py ---
+﻿"""
+app7/routes.py — DeepScanX AI Chatbot page
+The AI chat is handled entirely client-side via Puter.js (free, no API key needed).
+This module only serves the chatbot page HTML.
+"""
+from flask import Blueprint, render_template, request, make_response
+from utils.helpers import login_required
+
+bp = Blueprint('app7', __name__, template_folder='templates')
+
+
+--- app8\routes.py ---
+"""
+app8/routes.py — Skin Cancer (Melanoma) Detection
+Analyzes dermoscopy images to classify benign vs. malignant lesions.
+"""
+import base64
+import io
+import os
+import json
+import numpy as np
+import cv2
+
+--- app9\routes.py ---
+"""
+app9/routes.py — Chest X-Ray Analysis
+Detect Pneumonia, COVID-19, Tuberculosis, or Normal from X-Ray images.
+"""
+import base64
+import io
+import os
+import json
+import numpy as np
+import cv2

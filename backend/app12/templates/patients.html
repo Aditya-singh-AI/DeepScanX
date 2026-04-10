@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Patient Management — DeepScanX AI</title>
+  <link rel="icon" href="https://img.freepik.com/premium-photo/black-background-with-pink-orange-logo_978914-26588.jpg">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}:root{--bg:#050508;--surface:rgba(220,20,60,.06);--crimson:#dc143c;--crimson-d:#8b0000;--crimson-l:#ff4d6d;--white:#f8f8f8;--gray:#a0a0b0;--gray2:#6b6b80;--border:rgba(220,20,60,.15);--border2:rgba(255,255,255,.06);--radius:16px;--font:'Inter',sans-serif;--font2:'Space Grotesk',sans-serif}
+    body{font-family:var(--font);background:var(--bg);color:var(--white);line-height:1.7}
+    .nav-wrap{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem 0;background:rgba(5,5,8,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}.nav-inner{max-width:1320px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between}
+    .logo{display:flex;align-items:center;gap:.75rem;text-decoration:none}.logo-icon{width:44px;height:44px;border-radius:50%;border:2px solid var(--crimson);object-fit:cover}.logo-text{font-family:var(--font2);font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,#fff 40%,var(--crimson));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .btn-back{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1.2rem;background:rgba(220,20,60,.1);color:var(--crimson-l);border-radius:8px;text-decoration:none;font-size:.85rem;border:1px solid var(--border)}
+    .content{max-width:1100px;margin:100px auto 60px;padding:0 2rem}
+    .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+    .page-header h1{font-family:var(--font2);font-size:2rem;font-weight:700}.page-header h1 .accent{color:var(--crimson-l)}
+    .patients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem}
+    .patient-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;transition:all .4s;cursor:pointer;text-decoration:none;color:var(--white)}
+    .patient-card:hover{border-color:rgba(220,20,60,.4);transform:translateY(-4px)}.patient-card h3{font-size:1.1rem;margin-bottom:.3rem}
+    .patient-meta span{font-size:.8rem;color:var(--gray);margin-right:1rem}.patient-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--crimson),var(--crimson-d));display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:#fff}
+    .patient-stats{display:flex;gap:1.5rem;padding-top:.8rem;border-top:1px solid var(--border2);margin-top:1rem}.patient-stats .stat{text-align:center}.patient-stats .num{font-size:1.2rem;font-weight:600;color:var(--crimson-l)}.patient-stats .lbl{font-size:.7rem;color:var(--gray2)}
+    .btn-create{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.5rem;background:linear-gradient(135deg,var(--crimson),var(--crimson-d));border:none;border-radius:50px;color:#fff;cursor:pointer;font-size:.9rem;font-family:var(--font);text-decoration:none;transition:all .3s}.btn-create:hover{box-shadow:0 6px 24px rgba(220,20,60,.4);transform:translateY(-2px)}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;display:none;align-items:center;justify-content:center}.modal-overlay.active{display:flex}
+    .modal{background:#0f0f18;border:1px solid var(--border);border-radius:var(--radius);padding:2rem;max-width:500px;width:90%}.modal h3{font-size:1.2rem;margin-bottom:1.5rem}
+    .modal .fg{margin-bottom:1rem}.modal .fg label{display:block;font-size:.85rem;color:var(--gray);margin-bottom:.4rem}.modal .fg input,.modal .fg select,.modal .fg textarea{width:100%;padding:.6rem 1rem;background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:8px;color:var(--white);font-family:var(--font)}.modal .fg textarea{min-height:80px;resize:vertical}.modal .fg select option{background:#1a1a2e}
+    .modal-actions{display:flex;gap:1rem;margin-top:1.5rem}.modal-actions button{padding:.6rem 1.5rem;border-radius:50px;font-family:var(--font);cursor:pointer;font-size:.9rem;border:none}.btn-save{background:linear-gradient(135deg,var(--crimson),var(--crimson-d));color:#fff}.btn-cancel{background:rgba(255,255,255,.06);color:var(--white);border:1px solid var(--border)}
+    .empty-state{text-align:center;padding:4rem 2rem}.empty-state i{font-size:4rem;color:var(--gray2);margin-bottom:1rem}.empty-state h3{color:var(--gray)}.empty-state p{color:var(--gray2);margin-bottom:1.5rem}
+  </style>
+</head>
+<body>
+  <nav class="nav-wrap"><div class="nav-inner"><a href="{{ url_for('app1.home') }}" class="logo"><img src="https://img.freepik.com/premium-photo/black-background-with-pink-orange-logo_978914-26588.jpg" class="logo-icon"><span class="logo-text">DeepScanX AI</span></a><a href="{{ url_for('app1.home') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Dashboard</a></div></nav>
+  <div class="content">
+    <div class="page-header"><h1><i class="fas fa-users" style="color:var(--crimson)"></i> Patient <span class="accent">Management</span></h1>
+    <button class="btn-create" onclick="document.getElementById('cm').classList.add('active')"><i class="fas fa-plus"></i> New Patient</button></div>
+    {% with messages = get_flashed_messages() %}{% if messages %}<div style="padding:1rem;background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.3);border-radius:12px;margin-bottom:1.5rem">{% for m in messages %}<p style="color:#55efc4;font-size:.9rem">{{ m }}</p>{% endfor %}</div>{% endif %}{% endwith %}
+    {% if patients %}<div class="patients-grid">{% for p in patients %}<a href="{{ url_for('app12.patient_detail', patient_id=p._id) }}" class="patient-card"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem"><div><h3>{{ p.name }}</h3><div class="patient-meta">{% if p.age %}<span><i class="fas fa-birthday-cake"></i> {{ p.age }} yrs</span>{% endif %}{% if p.gender %}<span><i class="fas fa-venus-mars"></i> {{ p.gender }}</span>{% endif %}{% if p.medical_record_number %}<span><i class="fas fa-id-card"></i> {{ p.medical_record_number }}</span>{% endif %}</div></div><div class="patient-avatar">{{ p.name[0]|upper }}</div></div><div class="patient-stats"><div class="stat"><div class="num">{{ p.scan_count or 0 }}</div><div class="lbl">Scans</div></div><div class="stat"><div class="num">{% if p.last_scan %}{{ p.last_scan.strftime('%m/%d') }}{% else %}—{% endif %}</div><div class="lbl">Last Scan</div></div></div></a>{% endfor %}</div>
+    {% else %}<div class="empty-state"><i class="fas fa-user-plus"></i><h3>No patients yet</h3><p>Create a patient profile to track diagnostic history.</p><button class="btn-create" onclick="document.getElementById('cm').classList.add('active')"><i class="fas fa-plus"></i> Create First Patient</button></div>{% endif %}
+  </div>
+  <div class="modal-overlay" id="cm"><div class="modal"><h3><i class="fas fa-user-plus" style="color:var(--crimson)"></i> New Patient</h3><form method="POST" action="{{ url_for('app12.create_patient') }}"><div class="fg"><label>Full Name *</label><input type="text" name="name" required placeholder="Patient name"></div><div class="fg"><label>Age</label><input type="number" name="age" min="0" max="150"></div><div class="fg"><label>Gender</label><select name="gender"><option value="">—</option><option>Male</option><option>Female</option><option>Other</option></select></div><div class="fg"><label>Medical Record #</label><input type="text" name="medical_record"></div><div class="fg"><label>Notes</label><textarea name="notes"></textarea></div><div class="modal-actions"><button type="submit" class="btn-save"><i class="fas fa-save"></i> Create</button><button type="button" class="btn-cancel" onclick="document.getElementById('cm').classList.remove('active')">Cancel</button></div></form></div></div>
+</body>
+</html>

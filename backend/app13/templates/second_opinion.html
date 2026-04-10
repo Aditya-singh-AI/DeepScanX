@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Second Opinion — DeepScanX AI</title>
+  <link rel="icon" href="https://img.freepik.com/premium-photo/black-background-with-pink-orange-logo_978914-26588.jpg">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}:root{--bg:#050508;--surface:rgba(220,20,60,.06);--crimson:#dc143c;--crimson-l:#ff4d6d;--white:#f8f8f8;--gray:#a0a0b0;--gray2:#6b6b80;--border:rgba(220,20,60,.15);--border2:rgba(255,255,255,.06);--radius:16px;--font:'Inter',sans-serif;--font2:'Space Grotesk',sans-serif}
+    body{font-family:var(--font);background:var(--bg);color:var(--white);line-height:1.7}
+    .nav-wrap{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem 0;background:rgba(5,5,8,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}.nav-inner{max-width:1320px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between}
+    .logo{display:flex;align-items:center;gap:.75rem;text-decoration:none}.logo-icon{width:44px;height:44px;border-radius:50%;border:2px solid var(--crimson);object-fit:cover}.logo-text{font-family:var(--font2);font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,#fff 40%,var(--crimson));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .btn-back{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1.2rem;background:rgba(220,20,60,.1);color:var(--crimson-l);border-radius:8px;text-decoration:none;font-size:.85rem;border:1px solid var(--border)}
+    .content{max-width:1000px;margin:100px auto 60px;padding:0 2rem}
+    h1{font-family:var(--font2);font-size:2rem;font-weight:700;margin-bottom:2rem}h1 .accent{color:var(--crimson-l)}
+    .request-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;transition:all .3s}
+    .request-card:hover{border-color:rgba(220,20,60,.3)}
+    .request-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
+    .status-pill{padding:.3rem .8rem;border-radius:50px;font-size:.78rem;font-weight:600}
+    .status-pill.pending{background:rgba(243,156,18,.1);color:#f39c12;border:1px solid rgba(243,156,18,.3)}
+    .status-pill.reviewed{background:rgba(39,174,96,.1);color:#55efc4;border:1px solid rgba(39,174,96,.3)}
+    .pred-summary{display:flex;gap:1.5rem;flex-wrap:wrap;font-size:.9rem;color:var(--gray);margin-bottom:.5rem}
+    .pred-summary span{display:flex;align-items:center;gap:.3rem}
+    .comments-section{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border2)}
+    .comment{padding:.8rem;background:rgba(255,255,255,.03);border-radius:8px;margin-bottom:.5rem}
+    .comment .author{font-size:.8rem;color:var(--crimson-l);margin-bottom:.3rem}
+    .comment .text{font-size:.9rem;color:var(--gray)}
+    .comment .time{font-size:.7rem;color:var(--gray2);margin-top:.3rem}
+    .empty-state{text-align:center;padding:4rem;color:var(--gray2)}.empty-state i{font-size:3rem;margin-bottom:1rem}
+  </style>
+</head>
+<body>
+  <nav class="nav-wrap"><div class="nav-inner"><a href="{{ url_for('app1.home') }}" class="logo"><img src="https://img.freepik.com/premium-photo/black-background-with-pink-orange-logo_978914-26588.jpg" class="logo-icon"><span class="logo-text">DeepScanX AI</span></a><a href="{{ url_for('app1.history') }}" class="btn-back"><i class="fas fa-arrow-left"></i> History</a></div></nav>
+  <div class="content">
+    <h1><i class="fas fa-user-md" style="color:var(--crimson)"></i> My Second Opinion <span class="accent">Requests</span></h1>
+    {% if requests %}
+      {% for r in requests %}
+      <div class="request-card">
+        <div class="request-header">
+          <div><strong>{{ r.prediction_data.module|replace('_',' ')|title }}</strong> — {{ r.prediction_data.predicted_class }}</div>
+          <span class="status-pill {{ r.status }}">{{ r.status|title }}</span>
+        </div>
+        <div class="pred-summary">
+          <span><i class="fas fa-file"></i> {{ r.prediction_data.filename }}</span>
+          <span><i class="fas fa-percent"></i> {{ r.prediction_data.confidence }}</span>
+          <span><i class="fas fa-calendar"></i> {{ r.created_at.strftime('%Y-%m-%d') if r.created_at else '' }}</span>
+          {% if r.reviewer_email %}<span><i class="fas fa-envelope"></i> {{ r.reviewer_email }}</span>{% endif %}
+        </div>
+        {% if r.message %}<p style="font-size:.85rem;color:var(--gray);margin:.5rem 0;padding:.5rem;background:rgba(255,255,255,.03);border-radius:6px"><i class="fas fa-comment"></i> {{ r.message }}</p>{% endif %}
+        {% if r.comments %}
+        <div class="comments-section">
+          <strong style="font-size:.85rem;color:var(--gray)"><i class="fas fa-comments"></i> Reviews ({{ r.comments|length }}):</strong>
+          {% for c in r.comments %}
+          <div class="comment"><div class="author">{{ c.reviewer_name }}</div><div class="text">{{ c.text }}</div><div class="time">{{ c.created_at.strftime('%Y-%m-%d %H:%M') if c.created_at else '' }}</div></div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state"><i class="fas fa-inbox"></i><h3>No second opinion requests yet</h3><p>Use the "Request Second Opinion" button on any prediction to get peer review.</p></div>
+    {% endif %}
+  </div>
+</body>
+</html>

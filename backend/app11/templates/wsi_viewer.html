@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>WSI Viewer — DeepScanX AI</title>
+  <link rel="icon" href="https://img.freepik.com/premium-photo/black-background-with-pink-orange-logo_978914-26588.jpg" type="image/png">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.1/openseadragon.min.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#050508;--surface:rgba(220,20,60,.06);--crimson:#dc143c;--crimson-d:#8b0000;--crimson-l:#ff4d6d;--white:#f8f8f8;--gray:#a0a0b0;--gray2:#6b6b80;--border:rgba(220,20,60,.15);--border2:rgba(255,255,255,.06);--radius:16px;--font:'Inter',sans-serif;--font2:'Space Grotesk',sans-serif}
+    body{font-family:var(--font);background:var(--bg);color:var(--white);overflow-x:hidden}
+    .nav-wrap{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem 0;background:rgba(5,5,8,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+    .nav-inner{max-width:1320px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between}
+    .logo{display:flex;align-items:center;gap:.75rem;text-decoration:none}
+    .logo-icon{width:44px;height:44px;border-radius:50%;border:2px solid var(--crimson);object-fit:cover}
+    .logo-text{font-family:var(--font2);font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,#fff 40%,var(--crimson));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .btn-back{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1.2rem;background:rgba(220,20,60,.1);color:var(--crimson-l);border-radius:8px;text-decoration:none;font-size:.85rem;border:1px solid var(--border)}
+    .content{max-width:1200px;margin:90px auto 60px;padding:0 2rem}
+    .module-header{text-align:center;margin-bottom:2rem}
+    .module-header h1{font-family:var(--font2);font-size:2.2rem;font-weight:700}
+    .module-header h1 .accent{color:var(--crimson-l)}
+    .module-header p{color:var(--gray);margin-top:.5rem}
+
+    .upload-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:2rem}
+    .upload-card h3{margin-bottom:1rem;font-size:1.1rem}
+    .slides-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-top:1.5rem}
+    .slide-card{background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:12px;padding:1.2rem;text-align:center;transition:all .3s;cursor:pointer;text-decoration:none;color:var(--white)}
+    .slide-card:hover{border-color:var(--crimson);transform:translateY(-4px)}
+    .slide-card i{font-size:2rem;color:var(--crimson);margin-bottom:.5rem}
+    .slide-card p{font-size:.85rem;color:var(--gray);word-break:break-all}
+
+    /* Viewer */
+    #viewer-container{width:100%;height:70vh;background:#111;border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;position:relative;display:none}
+    #osd-viewer{width:100%;height:100%}
+    .viewer-toolbar{display:flex;gap:.5rem;padding:.8rem;background:rgba(0,0,0,.7);position:absolute;bottom:0;left:0;right:0;z-index:10}
+    .viewer-toolbar button{padding:.4rem .8rem;background:rgba(220,20,60,.15);border:1px solid var(--border);border-radius:6px;color:var(--white);cursor:pointer;font-size:.8rem;transition:all .2s}
+    .viewer-toolbar button:hover{background:rgba(220,20,60,.3)}
+    .viewer-info{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.8);padding:.5rem 1rem;border-radius:8px;font-size:.8rem;color:var(--gray);z-index:10}
+
+    /* Analysis Panel */
+    .analysis-panel{display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-top:1rem}
+    .analysis-panel.active{display:block;animation:fadeIn .4s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .analysis-panel h4{color:var(--crimson-l);margin-bottom:1rem}
+    .patch-result{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .patch-result img{width:100%;border-radius:8px;border:1px solid var(--border2)}
+    .pred-info{padding:1rem}
+    .pred-info .label{font-size:.8rem;color:var(--gray);margin-bottom:.3rem}
+    .pred-info .value{font-size:1.1rem;font-weight:600;margin-bottom:.8rem}
+
+    .upload-form{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+    .upload-form input[type="file"]{display:none}
+    .upload-btn{display:flex;align-items:center;gap:.5rem;padding:.6rem 1.5rem;background:linear-gradient(135deg,var(--crimson),var(--crimson-d));border:none;border-radius:50px;color:#fff;cursor:pointer;font-size:.9rem;transition:all .3s}
+    .upload-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(220,20,60,.4)}
+    @media(max-width:768px){.content{padding:0 1rem}.slides-grid{grid-template-columns:1fr 1fr}#viewer-container{height:50vh}}
+  </style>
+</head>
+<body>
+  <nav class="nav-wrap"><div class="nav-inner">
+    <a href="{{ url_for('app1.home') }}" class="logo"><img src="https://img.freepik.com/premium-photo/black-background-with-pink-orange-logo_978914-26588.jpg" alt="Logo" class="logo-icon"><span class="logo-text">DeepScanX AI</span></a>
+    <a href="{{ url_for('app1.home') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Dashboard</a>
+  </div></nav>
+
+  <div class="content">
+    <div class="module-header">
+      <h1>Whole Slide Image <span class="accent">Viewer</span></h1>
+      <p>Upload and explore high-resolution pathology slides with AI-powered patch analysis</p>
+    </div>
+
+    {% with messages = get_flashed_messages() %}{% if messages %}
+    <div style="padding:1rem;background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.3);border-radius:12px;margin-bottom:1rem;">
+      {% for msg in messages %}<p style="color:#55efc4;font-size:.9rem;">{{ msg }}</p>{% endfor %}
+    </div>{% endif %}{% endwith %}
+
+    {% if not viewing %}
+    <div class="upload-card">
+      <h3><i class="fas fa-upload" style="color:var(--crimson);margin-right:.5rem"></i> Upload Pathology Slide</h3>
+      <form method="POST" action="{{ url_for('app11.upload_slide') }}" enctype="multipart/form-data" class="upload-form">
+        <label class="upload-btn" for="slideInput"><i class="fas fa-file-image"></i> Choose Slide</label>
+        <input type="file" name="slide" id="slideInput" accept=".png,.jpg,.jpeg,.tif,.tiff,.bmp" onchange="this.form.submit()">
+        <span id="slideFileName" style="color:var(--gray);font-size:.9rem">No file selected</span>
+      </form>
+
+      {% if slides %}
+      <h3 style="margin-top:2rem"><i class="fas fa-images" style="color:var(--crimson);margin-right:.5rem"></i> Your Slides</h3>
+      <div class="slides-grid">
+        {% for s in slides %}
+        <a href="{{ url_for('app11.view_slide', filename=s) }}" class="slide-card">
+          <i class="fas fa-microscope"></i>
+          <p>{{ s }}</p>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p style="color:var(--gray2);margin-top:1.5rem;text-align:center">No slides uploaded yet. Upload a high-resolution pathology image to get started.</p>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if viewing %}
+    <!-- OpenSeadragon Viewer -->
+    <div id="viewer-container" style="display:block">
+      <div id="osd-viewer"></div>
+      <div class="viewer-info">Click on the slide to analyze a region with AI</div>
+      <div class="viewer-toolbar">
+        <button onclick="viewer.viewport.zoomBy(1.5)"><i class="fas fa-search-plus"></i> Zoom In</button>
+        <button onclick="viewer.viewport.zoomBy(0.67)"><i class="fas fa-search-minus"></i> Zoom Out</button>
+        <button onclick="viewer.viewport.goHome()"><i class="fas fa-compress-arrows-alt"></i> Reset</button>
+        <button onclick="analyzeClick=!analyzeClick;this.style.background=analyzeClick?'rgba(220,20,60,.5)':'';this.innerHTML=analyzeClick?'<i class=\'fas fa-crosshairs\'></i> Click to Analyze: ON':'<i class=\'fas fa-crosshairs\'></i> Click to Analyze: OFF'">
+          <i class="fas fa-crosshairs"></i> Click to Analyze: OFF
+        </button>
+      </div>
+    </div>
+
+    <!-- Analysis Results Panel -->
+    <div class="analysis-panel" id="analysisPanel">
+      <h4><i class="fas fa-brain" style="margin-right:.5rem"></i> Patch Analysis Result</h4>
+      <div class="patch-result">
+        <div>
+          <img id="patchHeatmap" src="" alt="Grad-CAM Heatmap" style="display:none">
+        </div>
+        <div class="pred-info">
+          <div class="label">Predicted Class</div>
+          <div class="value" id="patchClass">—</div>
+          <div class="label">Confidence</div>
+          <div class="value" id="patchConf">—</div>
+          <div class="label">Patch Coordinates</div>
+          <div class="value" id="patchCoords">—</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let analyzeClick = false;
+      const viewer = OpenSeadragon({
+        id: "osd-viewer",
+        tileSources: "{{ tiles_base }}/tiles.dzi",
+        showNavigationControl: false,
+        maxZoomLevel: 40,
+        minZoomLevel: 0.5,
+        gestureSettingsMouse: { clickToZoom: false },
+      });
+
+      viewer.addHandler('canvas-click', function(event) {
+        if (!analyzeClick) return;
+        event.preventDefaultAction = true;
+
+        const viewportPoint = viewer.viewport.pointFromPixel(event.position);
+        const imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
+        const x = Math.round(imagePoint.x);
+        const y = Math.round(imagePoint.y);
+
+        document.getElementById('analysisPanel').classList.add('active');
+        document.getElementById('patchClass').textContent = 'Analyzing...';
+        document.getElementById('patchConf').textContent = '...';
+        document.getElementById('patchCoords').textContent = `(${x}, ${y})`;
+
+        fetch('/app11/analyze_patch', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ filename: "{{ filename }}", x: x, y: y, patch_size: 224 })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.error) {
+            document.getElementById('patchClass').textContent = 'Error: ' + data.error;
+            return;
+          }
+          document.getElementById('patchClass').textContent = data.predicted_class;
+          document.getElementById('patchConf').textContent = (data.confidence * 100).toFixed(1) + '%';
+          if (data.heatmap) {
+            const img = document.getElementById('patchHeatmap');
+            img.src = data.heatmap;
+            img.style.display = 'block';
+          }
+        })
+        .catch(err => {
+          document.getElementById('patchClass').textContent = 'Error';
+        });
+      });
+    </script>
+    {% endif %}
+  </div>
+
+  <script>
+    const si = document.getElementById('slideInput');
+    if(si) si.addEventListener('change', function() {
+      document.getElementById('slideFileName').textContent = this.files[0]?.name || 'No file selected';
+    });
+  </script>
+</body>
+</html>
