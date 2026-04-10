@@ -185,5 +185,5 @@ It is NOT a medical device and is NOT intended for clinical diagnosis. Always co
 
 <div align="center">
   <b>Built with ❤️ for the future of healthcare.</b><br>
-  © 2025 DeepScanX. All Rights Reserved.
+  © 2026 DeepScanX. All Rights Reserved.
 </div>
