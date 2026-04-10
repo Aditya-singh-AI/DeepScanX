@@ -141,7 +141,7 @@ PORT=5000
 FLASK_ENV=development
 ```
 
-### 4. Running the Project
+### 4. Running the Projects
 
 **Using the Automated Script (Windows):**
 ```bash
