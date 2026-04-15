@@ -21,15 +21,29 @@ bp = Blueprint('api', __name__)
 def add_cors(response):
     """Ensure every API response carries CORS headers — even error responses."""
     origin = request.headers.get("Origin", "")
-    if origin:
+    allowed = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+        "http://localhost:3000",
+        "https://deepscanx-ai.vercel.app",
+    ]
+    
+    # Allow any origin that's in our allowed list
+    if origin in allowed:
         response.headers["Access-Control-Allow-Origin"] = origin
-        response.headers["Access-Control-Allow-Credentials"] = "true"
-        response.headers["Access-Control-Allow-Headers"] = (
-            "Content-Type, Authorization, X-Requested-With"
-        )
-        response.headers["Access-Control-Allow-Methods"] = (
-            "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-        )
+    elif not origin:
+        response.headers["Access-Control-Allow-Origin"] = "*"
+    
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Allow-Headers"] = (
+        "Content-Type, Authorization, X-Requested-With, Accept"
+    )
+    response.headers["Access-Control-Allow-Methods"] = (
+        "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    )
+    response.headers["Access-Control-Max-Age"] = "3600"
     return response
 
 def _image_from_request():

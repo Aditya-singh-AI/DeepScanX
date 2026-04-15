@@ -42,15 +42,31 @@ CORS(app, supports_credentials=True, origins=ALLOWED_ORIGINS,
 @app.after_request
 def inject_cors_headers(response):
     origin = request.headers.get("Origin", "")
-    if origin:
+    allowed = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+        "http://localhost:3000",
+        "https://deepscanx-ai.vercel.app",
+    ]
+    
+    # Allow any origin that's in our allowed list
+    if origin in allowed:
         response.headers["Access-Control-Allow-Origin"] = origin
-        response.headers["Access-Control-Allow-Credentials"] = "true"
-        response.headers["Access-Control-Allow-Headers"] = (
-            "Content-Type, Authorization, X-Requested-With"
-        )
-        response.headers["Access-Control-Allow-Methods"] = (
-            "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-        )
+    elif not origin:
+        # No origin header, allow all (development safety)
+        response.headers["Access-Control-Allow-Origin"] = "*"
+    
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Allow-Headers"] = (
+        "Content-Type, Authorization, X-Requested-With, Accept"
+    )
+    response.headers["Access-Control-Allow-Methods"] = (
+        "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    )
+    response.headers["Access-Control-Max-Age"] = "3600"
+    
     return response
 
 # ── Handle OPTIONS pre-flight for every route ────────────────────────────────
@@ -69,7 +85,42 @@ def handle_options():
             resp.headers["Access-Control-Allow-Methods"] = (
                 "GET, POST, PUT, DELETE, OPTIONS, PATCH"
             )
+            resp.headers["Access-Control-Max-Age"] = "3600"
         return resp
+
+# ── Global error handler to ensure CORS headers on errors ─────────────────────
+@app.errorhandler(Exception)
+def handle_error(error):
+    from flask import make_response
+    import traceback
+    
+    error_message = str(error)
+    status_code = getattr(error, "code", 500)
+    
+    # Log the full traceback for debugging
+    if app.debug:
+        print(f"\n[ERROR] {status_code}: {error_message}")
+        print(traceback.format_exc())
+    
+    response = make_response(
+        jsonify({
+            "error": error_message,
+            "status": "error",
+            "traceback": traceback.format_exc() if app.debug else None
+        }),
+        status_code
+    )
+    origin = request.headers.get("Origin", "")
+    if origin:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Headers"] = (
+            "Content-Type, Authorization, X-Requested-With"
+        )
+        response.headers["Access-Control-Allow-Methods"] = (
+            "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+        )
+    return response
 
 # ── Configuration (all values come from config.py which loads .env reliably) ─
 app.config['SECRET_KEY'] = config.SECRET_KEY
